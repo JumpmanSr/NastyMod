@@ -56,6 +56,7 @@ public class NastyModClass : MelonMod
     private bool _infiniteEnergy = false;
     private bool _infiniteStamina = false;
     private bool _neverWanted = false;
+    private bool _ESP = false;
     private float _moveSpeedMultiplier = 1f;
     private float _crouchSpeedMultiplier = 0.6f;
     private float _jumpMultiplier = 1f;
@@ -153,6 +154,27 @@ public class NastyModClass : MelonMod
 
     public override void OnGUI()
     {
+        // **ESP** (Could be cleaned up and possibly distance sliders / box sliders. And not putting variables in loop but thats TODO)
+        if (_ESP)
+        {
+            foreach (NPC npcs in NPCManager.NPCRegistry)
+            {
+                if (npcs.FirstName == String.Empty) continue;
+                float dist = Vector3.Distance(Player.Local.transform.position, npcs.transform.position);
+                if (dist > 25f) continue; //Implement distance slider
+                Vector3 screenPosition = Camera.main.WorldToScreenPoint(npcs.transform.position);
+                if (screenPosition.z < 0) continue; //hides boxes for entities behind you.
+                Vector2 start = new Vector2(Screen.width / 2, Screen.height);
+                Vector2 end = new Vector2(screenPosition.x, Screen.height - screenPosition.y);
+                float boxwidth = 100f * (dist / 100f);
+                if (boxwidth < 80) boxwidth = 80f;
+                float boxheight = 100f * (dist / 100f);
+                if (boxheight < 100) boxheight = 100f;
+                GUI.Label(new Rect(end.x - (boxwidth / 2) - 20f, end.y - boxheight - 20f, boxwidth + 50f, boxheight + 50f), npcs.FirstName + " " + npcs.LastName);
+                DrawBox(new Vector2(end.x - (boxwidth / 2), end.y - boxheight), boxwidth, boxheight, Color.blue, 1f);
+            }
+        }
+
         if (!_isOpen) return;
 
         // **Styles**
@@ -327,7 +349,16 @@ public class NastyModClass : MelonMod
         GUILayout.Space(10);
 
         // ** Coming soon...
-        GUILayout.Label("Coming soon...");
+        // ** Infinite Energy toggle
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("ESP (Box Based)");
+        string status_ESP = _ESP ? "On" : "Off";
+        if (GUILayout.Button(status_ESP, _buttonStyle))
+        {
+            _ESP = !_ESP;
+            MelonLogger.Msg("ESP toggled!");
+        }
+        GUILayout.EndHorizontal();
 
         GUILayout.EndArea();
     }
@@ -639,6 +670,7 @@ public class NastyModClass : MelonMod
         GUILayout.Label("Thanks to");
         GUILayout.Label("GitHub Copilot");
         GUILayout.Label("MelonLoader");
+        GUILayout.Label("Jumpman");
 
         GUILayout.EndArea();
     }
@@ -668,6 +700,46 @@ public class NastyModClass : MelonMod
             }
         }
         return employees;
+    }
+
+    public static void DrawLine(Vector2 start, Vector2 end, Color color, float width)
+    {
+        Color oldColour = GUI.color;
+
+        var rad2deg = 360 / (Math.PI * 2);
+
+        Vector2 d = end - start;
+
+        float a = (float)rad2deg * Mathf.Atan(d.y / d.x);
+
+        if (d.x < 0)
+            a += 180;
+
+        int width2 = (int)Mathf.Ceil(width / 2);
+
+        GUIUtility.RotateAroundPivot(a, start);
+
+        GUI.color = color;
+
+        GUI.DrawTexture(new Rect(start.x, start.y - width2, d.magnitude, width), Texture2D.whiteTexture, ScaleMode.StretchToFill);
+
+        GUIUtility.RotateAroundPivot(-a, start);
+
+        GUI.color = oldColour;
+    }
+
+    public static void DrawBox(Vector2 topLeft, float width, float height, Color color, float lineWidth)
+    {
+        // Define the four corners of the box
+        Vector2 topRight = new Vector2(topLeft.x + width, topLeft.y);
+        Vector2 bottomLeft = new Vector2(topLeft.x, topLeft.y + height);
+        Vector2 bottomRight = new Vector2(topLeft.x + width, topLeft.y + height);
+
+        // Draw the four sides of the box (top, right, bottom, left)
+        DrawLine(topLeft, topRight, color, lineWidth);      // Top
+        DrawLine(topRight, bottomRight, color, lineWidth);  // Right
+        DrawLine(bottomRight, bottomLeft, color, lineWidth); // Bottom
+        DrawLine(bottomLeft, topLeft, color, lineWidth);    // Left
     }
 
     [HarmonyPatch]
