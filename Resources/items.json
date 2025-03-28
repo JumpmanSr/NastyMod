@@ -1,0 +1,209 @@
+{
+	"categories": [
+		{
+			"category": "Product",
+			"items": [
+				"granddaddypurple",
+				"greencrack",
+				"ogkush",
+				"sourdiesel",
+				"cocaine",
+				"meth"
+			]
+		},
+		{
+			"category": "Packaging",
+			"items": [
+				"baggie",
+				"brick",
+				"jar"
+			]
+		},
+		{
+			"category": "Growing",
+			"items": [
+				"extralonglifesoil",
+				"fertilizer",
+				"longlifesoil",
+				"pgr",
+				"soil",
+				"speedgrow",
+				"cocaleaf",
+				"granddaddypurpleseed",
+				"greencrackseed",
+				"ogkushseed",
+				"sourdieselseed",
+				"cocaseed"
+			]
+		},
+		{
+			"category": "Tools",
+			"items": [
+				"electrictrimmers",
+				"flashlight",
+				"managementclipboard",
+				"trashbag",
+				"trashgrabber",
+				"trimmers",
+				"wateringcan",
+				"bigsprinkler",
+				"soilpourer",
+				"potsprinkler",
+				"baseballbat",
+				"fryingpan",
+				"m1911",
+				"m1911mag",
+				"machete",
+				"revolvercylinder",
+				"revolver"
+			]
+		},
+		{
+			"category": "Furniture",
+			"items": [
+				"coffeetable",
+				"dumpster",
+				"suspensionrack",
+				"metalsquaretable",
+				"trashcan",
+				"bed",
+				"smalltrashcan",
+				"TV",
+				"woodsquaretable"
+			]
+		},
+		{
+			"category": "Lightning",
+			"items": [
+				"fullspectrumgrowlight",
+				"halogengrowlight",
+				"ledgrowlight"
+			]
+		},
+		{
+			"category": "Consumable",
+			"items": [
+				"banana",
+				"cuke",
+				"donut",
+				"energydrink",
+				"flumedicine",
+				"chili"
+			]
+		},
+		{
+			"category": "Equipment",
+			"items": [
+				"airpot",
+				"plasticpot",
+				"growtent",
+				"moisturepreservingpot",
+				"largestoragerack",
+				"mediumstoragerack",
+				"smallstoragerack",
+				"brickpress",
+				"cauldron",
+				"chemistrystation",
+				"dryingrack",
+				"laboven",
+				"launderingstation",
+				"mixingstation",
+				"mixingstationmk",
+				"packagingstation",
+				"packagingstationmk"
+			]
+		},
+		{
+			"category": "Ingredient",
+			"items": [
+				"acid",
+				"addy",
+				"battery",
+				"gasoline",
+				"horsesemen",
+				"motoroil",
+				"mouthwash",
+				"paracetamol",
+				"viagra"
+			]
+		},
+		{
+			"category": "Decoration",
+			"items": [
+				"floorlamp",
+				"displaycabinet",
+				"filingcabinet"
+			]
+		},
+		{
+			"category": "Clothing",
+			"items": [
+				"cargopants",
+				"jeans",
+				"jorts",
+				"longskirt",
+				"overalls",
+				"skirt",
+				"legendsunglasses",
+				"rectangleframeglasses",
+				"smallroundglasses",
+				"speeddealershades",
+				"combatboots",
+				"dressshoes",
+				"flats",
+				"sandals",
+				"sneakers",
+				"fingerlessgloves",
+				"gloves",
+				"buckethat",
+				"cap",
+				"chefhat",
+				"cowboyhat",
+				"flatcap",
+				"porkpiehat",
+				"saucepan",
+				"apron",
+				"blazer",
+				"collarjacket",
+				"tacticalvest",
+				"vest",
+				"buttonup",
+				"rolledbuttonup",
+				"flannelshirt",
+				"tshirt",
+				"vneck",
+				"belt"
+			]
+		},
+		{
+			"category": "Vehicle",
+			"items": [
+				"cheapskateboard",
+				"cruiser",
+				"goldenskateboard",
+				"lightweightskateboard",
+				"skateboard"
+			]
+		},
+		{
+			"category": "Special",
+			"items": [
+				"chateaulapeepee",
+				"goldbar",
+				"oldmanjimmys",
+				"cocainebase",
+				"iodine",
+				"liquidbabyblue",
+				"liquidbikercrank",
+				"liquidglass",
+				"liquidmeth",
+				"megabean",
+				"phosphorus",
+				"babyblue",
+				"bikercrank",
+				"glass",
+				"testweed"
+			]
+		}
+	]
+}
