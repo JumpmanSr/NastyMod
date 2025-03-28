@@ -18,7 +18,10 @@ using HarmonyLib;
 using Il2CppScheduleOne;
 using Il2CppScheduleOne.ItemFramework;
 using Il2CppScheduleOne.PlayerScripts;
+using Il2CppScheduleOne.Employees;
+
 using JetBrains.Annotations;
+using Il2CppScheduleOne.NPCs;
 
 public class NastyModClass : MelonMod
 {
@@ -38,9 +41,10 @@ public class NastyModClass : MelonMod
     private int tabHeight = 0;
 
     private int menuTab = 0;
-    private readonly List<string> menuTabs = new List<string> { "Player", "World", "Spawner", "Misc", "Credits" };
+    private readonly List<string> menuTabs = new List<string> { "Player", "World", "Spawner", "Misc", "Employees", "Credits" };
 
     private Dictionary<string, List<string>> itemTree;
+    private List<string> propertys;
 
     private int _moddedStackSize = 100;
     private int _moddedCash = 1000;
@@ -59,6 +63,9 @@ public class NastyModClass : MelonMod
     private string _selectedCategory = "Product";
     private Vector2 _itemSpawnerCategoryScrollPosition;
     private int _itemAmount = 1;
+
+    private string _selectedProperty = "barn";
+    private Vector2 _employeeSpawnerPropertyScrollPosition;
 
     private GUIStyle _titleStyle;
     private GUIStyle _headerStyle;
@@ -97,12 +104,23 @@ public class NastyModClass : MelonMod
         Instance = this;
 
         loadAllItems();
+        loadAllPropertys();
     }
 
     private void loadAllItems()
     {
-        NastyMod.ItemLoader itemLoader = new NastyMod.ItemLoader();
+        NastyMod.JsonLoader itemLoader = new NastyMod.JsonLoader();
         itemTree = itemLoader.LoadItems();
+
+        MelonLogger.Msg($"Loaded {itemTree.Count} item categories");
+    }
+
+    private void loadAllPropertys()
+    {
+        NastyMod.JsonLoader propertyLoader = new NastyMod.JsonLoader();
+        propertys = propertyLoader.LoadPropertys();
+
+        MelonLogger.Msg($"Loaded {propertys.Count} propertys");
     }
 
     public override void OnUpdate()
@@ -205,6 +223,9 @@ public class NastyModClass : MelonMod
                 RenderMiscTab();
                 break;
             case 4:
+                RenderEmployeesTab();
+                break;
+            case 5:
                 RenderCreditsTab();
                 break;
         }
@@ -218,15 +239,13 @@ public class NastyModClass : MelonMod
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
 
-        // **Tab Title**
+        // Tab Title
         GUILayout.Label("Player", _headerStyle);
-        // *************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(10);
-        // **********
 
-        // **God Mode toggle**
+        // ** God Mode toggle
         GUILayout.BeginHorizontal();
         GUILayout.Label("God Mode");
         string status_godMode = _godMode ? "On" : "Off";
@@ -236,9 +255,8 @@ public class NastyModClass : MelonMod
             MelonLogger.Msg("God Mode toggled!");
         }
         GUILayout.EndHorizontal();
-        // *********************
 
-        // **Infinite Energy toggle**
+        // ** Infinite Energy toggle
         GUILayout.BeginHorizontal();
         GUILayout.Label("Infinite Energy");
         string status_infiniteEnergy = _infiniteEnergy ? "On" : "Off";
@@ -248,9 +266,8 @@ public class NastyModClass : MelonMod
             MelonLogger.Msg("Infinite Energy toggled!");
         }
         GUILayout.EndHorizontal();
-        // ***************************
 
-        // **Infinite Stamina toggle**
+        // ** Infinite Stamina toggle
         GUILayout.BeginHorizontal();
         GUILayout.Label("Infinite Stamina");
         string status_infiniteStamina = _infiniteStamina ? "On" : "Off";
@@ -260,9 +277,8 @@ public class NastyModClass : MelonMod
             MelonLogger.Msg("Infinite Stamina toggled!");
         }
         GUILayout.EndHorizontal();
-        // ****************************
 
-        // **Never wanted toggle**
+        // ** Never wanted toggle
         GUILayout.BeginHorizontal();
         GUILayout.Label("Never Wanted");
         string status_neverWanted = _neverWanted ? "On" : "Off";
@@ -272,35 +288,30 @@ public class NastyModClass : MelonMod
             MelonLogger.Msg("Never Wanted toggled!");
         }
         GUILayout.EndHorizontal();
-        // ************************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(20);
-        // **********
 
-        // **Move speed slider**
+        // ** Move speed slider
         GUILayout.BeginHorizontal();
         GUILayout.Label("Move speed multiplier: " + _moveSpeedMultiplier);
         _moveSpeedMultiplier = GUILayout.HorizontalSlider(_moveSpeedMultiplier, 1f, 10f, GUILayout.Width(180), GUILayout.Height(10));
         PlayerMovement.Instance.MoveSpeedMultiplier = _moveSpeedMultiplier;
         GUILayout.EndHorizontal();
-        // *********************
 
-        // **Crouch speed slider**
+        // ** Crouch speed slider
         GUILayout.BeginHorizontal();
         GUILayout.Label("Crouch speed multiplier: " + _crouchSpeedMultiplier);
         _crouchSpeedMultiplier = (float)GUILayout.HorizontalSlider(_crouchSpeedMultiplier, 0.6f, 10f, GUILayout.Width(180), GUILayout.Height(10));
         PlayerMovement.Instance.crouchSpeedMultipler = _crouchSpeedMultiplier;
         GUILayout.EndHorizontal();
-        // ***********************
 
-        // **Jump Multiplier slider**
+        // ** Jump Multiplier slider
         GUILayout.BeginHorizontal();
         GUILayout.Label("Jump Multiplier: " + _jumpMultiplier);
         _jumpMultiplier = GUILayout.HorizontalSlider(_jumpMultiplier, 1f, 10f, GUILayout.Width(180), GUILayout.Height(10));
         PlayerMovement.JumpMultiplier = _jumpMultiplier;
         GUILayout.EndHorizontal();
-        // **************************
 
         GUILayout.EndArea();
     }
@@ -309,17 +320,14 @@ public class NastyModClass : MelonMod
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
 
-        // **Tab Title**
+        // Tab Title
         GUILayout.Label("World", _headerStyle);
-        // *************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(10);
-        // **********
 
-        // **Coming soon...**
+        // ** Coming soon...
         GUILayout.Label("Coming soon...");
-        // ******************
 
         GUILayout.EndArea();
     }
@@ -328,13 +336,13 @@ public class NastyModClass : MelonMod
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
 
-        // **Tab Title**
+        // Tab Title
         GUILayout.Label("Spawner", _headerStyle);
-        // *************
 
-        // **Left side**
+        #region Left Side
         GUILayout.BeginArea(new Rect(0, 40, (menuWidth - (menuSpacing * 4) - menuSpacing) / 4, menuHeight - 110 - (menuSpacing * 2) - 40));
-        // **Item Category dropdown**
+        
+        // ** Item Category dropdown
         _itemSpawnerCategoryScrollPosition = GUILayout.BeginScrollView(_itemSpawnerCategoryScrollPosition, GUILayout.Width((menuWidth - (menuSpacing * 4) - menuSpacing) / 4), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 80 - menuSpacing));
         foreach (var category in itemTree)
         {
@@ -344,19 +352,20 @@ public class NastyModClass : MelonMod
             }
         }
         GUILayout.EndScrollView();
-        // **Spacer**
+
+        // Spacer
         GUILayout.Space(10);
-        // **********
-        // **Item Amount slider**
+
+        // ** Item Amount slider
         GUILayout.Label($"Item Amount: {_itemAmount}");
         _itemAmount = (int)GUILayout.HorizontalSlider(_itemAmount, 1, _moddedStackSize);
-        // **********************
-        GUILayout.EndArea();
-        // *************
 
-        // **Right side**
+        GUILayout.EndArea();
+        #endregion
+
+        #region Right side
         GUILayout.BeginArea(new Rect(((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) + menuSpacing, 40, ((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) * 3, menuHeight - 110 - (menuSpacing * 2) - 40));
-        // **Item buttons**
+        // ** Item buttons
         int columns = 3;
         int currentColumn = 0;
         GUILayout.BeginHorizontal();
@@ -389,9 +398,8 @@ public class NastyModClass : MelonMod
             }
         }
         GUILayout.EndHorizontal();
-        // ****************
         GUILayout.EndArea();
-        // **************
+        #endregion
 
         GUILayout.EndArea();
     }
@@ -400,28 +408,28 @@ public class NastyModClass : MelonMod
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
 
-        // **Tab Title**
+        // Tab Title
         GUILayout.Label("Misc", _headerStyle);
-        // *************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(10);
-        // **********
 
-        // **Default Stack Limit slider**
+        // ** Default Stack Limit slider
         GUILayout.Label("Default Stack Limit: " + _moddedStackSize);
         _moddedStackSize = (int)GUILayout.HorizontalSlider(_moddedStackSize, 10, 250);
-        // ******************************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(10);
-        // **********
 
-        // **Quality type buttons**
+        // Note
         GUILayout.Label("Change equipped quality type");
         GUILayout.Label("NOTE: You need to have the item equipped for this feature to work.");
+
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Quality type buttons
         GUILayout.BeginHorizontal();
-        // The quality types are enumerables found in ItemFramework.EQuality
         foreach (var qualityType in Enum.GetValues(typeof(EQuality)))
         {
             if (GUILayout.Button(qualityType.ToString(), _buttonStyle))
@@ -433,13 +441,11 @@ public class NastyModClass : MelonMod
             }
         }
         GUILayout.EndHorizontal();
-        // ************************
 
-        // **Spacer**
-        GUILayout.Space(10);
-        // **********
+        // Spacer
+        GUILayout.Space(20);
 
-        // **Cash Modifier**
+        // ** Cash Modifier
         GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
         GUILayout.Label("Cash: " + _moddedCash);
@@ -464,13 +470,11 @@ public class NastyModClass : MelonMod
             command.Execute(args);
         }
         GUILayout.EndHorizontal();
-        // **************************
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(10);
-        // **********
 
-        // **Balance Modifier**
+        // ** Balance Modifier
         GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
         GUILayout.Label("Balance: " + _moddedBalance);
@@ -495,71 +499,176 @@ public class NastyModClass : MelonMod
             command.Execute(args);
         }
         GUILayout.EndHorizontal();
-        // **************************
 
-        // **Max Dealer Customers slider**
-        // GUILayout.BeginHorizontal();
-        // GUILayout.Label("Max Dealer Customers: " + _moddedDealerMaxCustomers);
-        // _moddedDealerMaxCustomers = (int)GUILayout.HorizontalSlider(_moddedDealerMaxCustomers, 1, 100);
-        // GUILayout.EndHorizontal();
-        // *******************************
+        // ** Max Dealer Customers slider
+        /* GUILayout.BeginHorizontal();
+        GUILayout.Label("Max Dealer Customers: " + _moddedDealerMaxCustomers);
+        _moddedDealerMaxCustomers = (int)GUILayout.HorizontalSlider(_moddedDealerMaxCustomers, 1, 100);
+        GUILayout.EndHorizontal(); */
 
-        // **Deaddrop Wait Per Item slider**
-        // GUILayout.BeginHorizontal();
-        // GUILayout.Label("Deaddrop Wait Per Item: " + __moddedDeaddropWaitPerItem);
-        // __moddedDeaddropWaitPerItem = (int)GUILayout.HorizontalSlider(__moddedDeaddropWaitPerItem, 1, 100);
-        // GUILayout.EndHorizontal();
-        // *********************************
+        // ** Deaddrop Wait Per Item slider
+        /* GUILayout.BeginHorizontal();
+        GUILayout.Label("Deaddrop Wait Per Item: " + __moddedDeaddropWaitPerItem);
+        __moddedDeaddropWaitPerItem = (int)GUILayout.HorizontalSlider(__moddedDeaddropWaitPerItem, 1, 100);
+        GUILayout.EndHorizontal(); */
 
-        // **Spacer**
+        // Spacer
         GUILayout.Space(20);
-        // **********
 
-        // **Unlock all achievements button**
+        // ** Unlock all achievements button
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Unlock all achievements", GUILayout.Width(menuWidth - (30 * 2)), GUILayout.Height(24)))
         {
             foreach (var achievement in Enum.GetValues(typeof(AchievementManager.EAchievement)))
             {
                 AchievementManager.Instance.UnlockAchievement((AchievementManager.EAchievement)achievement);
-            } 
+            }
         }
         GUILayout.EndHorizontal();
-        // **********************************
 
         GUILayout.EndArea();
     }
-    
+
+    private void RenderEmployeesTab()
+    {
+        GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
+
+        // Tab Title
+        GUILayout.Label($"Employees on Property \"{_selectedProperty}\"", _headerStyle);
+
+        // Spacer
+        GUILayout.Space(10);
+
+        #region Left Side
+        GUILayout.BeginArea(new Rect(0, 40, (menuWidth - (menuSpacing * 4) - menuSpacing) / 4, menuHeight - 110 - (menuSpacing * 2) - 40));
+        // ** Property buttons
+        _employeeSpawnerPropertyScrollPosition = GUILayout.BeginScrollView(_employeeSpawnerPropertyScrollPosition, GUILayout.Width((menuWidth - (menuSpacing * 4) - menuSpacing) / 4), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 80 - menuSpacing));
+        foreach (var property in propertys)
+        {
+            if (GUILayout.Button(property))
+            {
+                _selectedProperty = property;
+            }
+        }
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
+        #endregion
+
+        #region Right side
+        GUILayout.BeginArea(new Rect(((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) + menuSpacing, 40, ((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) * 3, menuHeight - 110 - (menuSpacing * 2) - 40));
+        
+        // ** Employee buttons
+        Dictionary<string, Dictionary<string, List<Employee>>> employees = new Dictionary<string, Dictionary<string, List<Employee>>>();
+        employees = GetAlLEmployees();
+
+        if (!employees.ContainsKey(_selectedProperty))
+        {
+            GUILayout.Label($"No Employees on Property \"{_selectedProperty}\"");
+        } else
+        {
+            foreach (var employeeType in employees[_selectedProperty])
+            {
+                GUILayout.Label(employeeType.Key);
+                foreach (var employee in employeeType.Value)
+                {
+                    string currentEmployeeType = employee.EmployeeType.ToString();
+                    string currentEmployeeName = employee.FirstName;
+
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label($"{currentEmployeeType} {currentEmployeeName}");
+
+                    if (GUILayout.Button("TP", GUILayout.Width(60)))
+                    {
+                        employee.gameObject.transform.position = Player.Local.transform.position;
+                    }
+                    if (GUILayout.Button("Fire", GUILayout.Width(60)))
+                    {
+                        employee.SendFire();
+                        employee.Movement.MoveSpeedMultiplier = 2.5f;
+                    }
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.Space(10);
+            }
+        }
+        
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Add Employee buttons
+        GUILayout.BeginHorizontal();
+        foreach (var employeeType in Enum.GetValues(typeof(EEmployeeType)))
+        {
+            if (GUILayout.Button($"Add {employeeType.ToString()}"))
+            {
+                Il2CppScheduleOne.Console.AddEmployeeCommand command = new Il2CppScheduleOne.Console.AddEmployeeCommand();
+                Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+
+                args.Add(employeeType.ToString());
+                args.Add(_selectedProperty);
+
+                command.Execute(args);
+            }
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.EndArea();
+        #endregion
+
+        GUILayout.EndArea();
+    }
+
     private void RenderCreditsTab()
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
 
         // **Tab Title**
         GUILayout.Label("Credits", _headerStyle);
-        // *************
 
         // **Spacer**
         GUILayout.Space(10);
-        // **********
 
         // **Creator**
         GUILayout.Label("This mod was created by nasty.codes");
         GUILayout.Label("Discord: nasty.codes");
-        // ***********
 
         // **Spacer**
         GUILayout.Space(20);
-        // **********
 
         // **Thanks**
         GUILayout.Label("Thanks to");
         GUILayout.Label("GitHub Copilot");
         GUILayout.Label("MelonLoader");
-        // ***********
 
         GUILayout.EndArea();
     }
 
+    public Dictionary<string, Dictionary<string, List<Employee>>> GetAlLEmployees()
+    {
+        Dictionary<string, Dictionary<string, List<Employee>>> employees = new Dictionary<string, Dictionary<string, List<Employee>>>();
+
+        foreach (var employee in EmployeeManager.Instance.AllEmployees.ToArray())
+        {
+            // MelonLogger.Msg("Employee: " + employee.FirstName + " " + employee.LastName + " " + employee.EmployeeType + " " + employee.AssignedProperty.propertyCode);
+
+            if (employees.ContainsKey(employee.AssignedProperty.propertyCode))
+            {
+                if (employees[employee.AssignedProperty.propertyCode].ContainsKey(employee.EmployeeType.ToString()))
+                {
+                    employees[employee.AssignedProperty.propertyCode][employee.EmployeeType.ToString()].Add(employee);
+                }
+                else
+                {
+                    employees[employee.AssignedProperty.propertyCode].Add(employee.EmployeeType.ToString(), new List<Employee> { employee });
+                }
+            }
+            else
+            {
+                employees.Add(employee.AssignedProperty.propertyCode, new Dictionary<string, List<Employee>> { { employee.EmployeeType.ToString(), new List<Employee> { employee } } });
+            }
+        }
+        return employees;
+    }
 
     [HarmonyPatch]
     public static class DebugPatch

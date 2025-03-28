@@ -5,7 +5,7 @@ using MelonLoader;
 using NastyMod;
 
 // MelonLoader
-[assembly: MelonInfo(typeof(NastyModClass), "NastyMod", "1.0.1", "nasty.codes")]
+[assembly: MelonInfo(typeof(NastyModClass), "NastyMod", "1.0.2", "nasty.codes")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden

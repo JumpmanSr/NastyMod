@@ -6,3 +6,6 @@ obj
 
 # Ignore .vs directory
 .vs
+
+# Ignore Temp.txt
+Temp.txt

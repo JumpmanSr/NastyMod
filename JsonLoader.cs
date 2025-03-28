@@ -6,7 +6,7 @@ using MelonLoader;
 
 namespace NastyMod
 {
-    internal class ItemLoader
+    internal class JsonLoader
     {
         public Dictionary<string, List<string>> LoadItems()
         {
@@ -82,6 +82,46 @@ namespace NastyMod
             }
 
             return itemTree;
+        }
+
+        public List<string> LoadPropertys()
+        {
+            List<string> propertys = new List<string>();
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "NastyMod.Resources.propertys.json";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null)
+                {
+                    // MelonLogger.Error("Failed to load propertys.json! Check if it's embedded correctly.");
+                    return propertys;
+                }
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string json = reader.ReadToEnd();
+                    // MelonLogger.Msg("Loaded JSON successfully.");
+                    // MelonLogger.Msg($"JSON Content: {json}");
+
+                    string[] parts = json.Split('"');
+                    foreach (string item in parts)
+                    {
+                        string trimmedItem = item.Replace(",", "").Replace("\n", "").Replace("\n", "").Replace("\t", "").Replace("\t", "").Trim();
+                        // MelonLogger.Msg($"Trimmed Item: {trimmedItem}");
+
+                        if (trimmedItem == "{" || trimmedItem == "[" || trimmedItem == "\"")
+                            continue;
+
+                        if (trimmedItem == "]" || trimmedItem == "}")
+                            break;
+
+                        if (!string.IsNullOrWhiteSpace(trimmedItem) && !trimmedItem.Contains("["))
+                        {
+                            propertys.Add(trimmedItem);
+                        }
+                    }
+                }
+            }
+            return propertys;
         }
     }
 }
